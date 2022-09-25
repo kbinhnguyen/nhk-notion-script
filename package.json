@@ -1,0 +1,22 @@
+{
+  "name": "nhk-notion-server",
+  "version": "1.0.0",
+  "description": "Server for Notion web clipper with NHK News Web & NHK News Web Easy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kbinhnguyen/nhk-notion-server.git"
+  },
+  "author": "Binh Nguyen",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/kbinhnguyen/nhk-notion-server/issues"
+  },
+  "homepage": "https://github.com/kbinhnguyen/nhk-notion-server#readme",
+  "dependencies": {
+    "dotenv": "^16.0.2"
+  }
+}
