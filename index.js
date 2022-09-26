@@ -17,11 +17,14 @@ async function getHtml(url) {
   });
 
   const $ = cheerio.load(data);
-  const wrapper = $('#wrapper');
-  console.log(wrapper.length);
+  const time = $('time').text();
+  const coverImg = $('img', '.content--thumb').attr('data-src');
+  const summary = $('.content--summary').html().split('<br>').join('\n\n');
+  console.log(summary);
 };
 
-getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
+
+getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837341000.html');
 
 
 //get page info
