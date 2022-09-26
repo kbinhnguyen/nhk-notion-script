@@ -1,4 +1,6 @@
 require('dotenv').config();
+const axios = require('axios');
+const cheerio = require('cheerio');
 const { chromium } = require('playwright');
 const { Client } = require('@notionhq/client');
 
@@ -13,6 +15,16 @@ const emojis = ['🗞', '🔖', '🤓', '📃', '📎', '📋', '📁', '🗒', 
 async function getHtmlCreateNotionPg(url) {
 
   const baseUrl = 'https://www3.nhk.or.jp';
+
+  // const { data } = await axios({
+  //   method: 'get',
+  //   url: baseUrl + url,
+  //   responseType: 'document',
+  // });
+
+  // const $ = cheerio.load(data);
+  // const bodySections = $('.content--body');
+  // console.log(bodySections.length);
 
   const browser = await chromium.launch();
   const context = await browser.newContext({
@@ -44,20 +56,9 @@ async function getHtmlCreateNotionPg(url) {
   let notionPgEleSubSections = [];
 
   const resolveSubSections = async () => {
-    // const subsections = await page.$$('.content--body');
-    const subsections = page.locator('.body-text');
-    return subsections.allInnerTexts;
-    // console.log(subsections.length);
-    // if (subsections.length === 0) {
-    //   return;
-    // }
-
-
-    // console.log(subsections.length);
-    // const htmlStrPromises = subsections.map((subsection) => (subsection.innerHTML));
-    // const htmlStrs = await Promise.all(htmlStrPromises);
-    // const htmlStrs = await subsections.evaluateAll(subsection => subsection.innerHTML);
-    // return htmlStrs;
+    const subsections = await page.$$('.content--body');
+    const htmlStrs = await Promise.all(subsections.map((subsection) => (subsection.innerHTML())));
+    return htmlStrs;
   };
 
 
@@ -82,7 +83,7 @@ async function getHtmlCreateNotionPg(url) {
     ]
   );
 
-
+console.log(subSections[0]);
 /*
    let notionPageElements = [{
     object: 'block',
