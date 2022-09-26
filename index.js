@@ -1,9 +1,27 @@
 require('dotenv').config();
+const axios = require('axios');
+const cheerio = require('cheerio');
 const { Client } = require('@notionhq/client');
+
 
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
 });
+
+
+async function getHtml(url) {
+  const { data } = await axios({
+    method: 'get',
+    url,
+    responseType: 'document',
+  });
+
+  const $ = cheerio.load(data);
+  const wrapper = $('#wrapper');
+  console.log(wrapper.length);
+};
+
+getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
 
 
 //get page info
@@ -37,6 +55,7 @@ const notion = new Client({
 
 
 // create a new page in a database
+/*
 (async () => {
   const response = await notion.pages.create({
     "cover": {
@@ -161,3 +180,4 @@ const notion = new Client({
 });
   console.log(response);
 })();
+*/
