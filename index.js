@@ -42,12 +42,8 @@ const notion = new Client({
     "cover": {
         "type": "external",
         "external": {
-            "url": "https://www3.nhk.or.jp/news/html/20220926/K10013837341_2209261145_0926115641_01_02.jpg"
+            "url": "https://www3.nhk.or.jp/news/html/20220926/K10013837341_2209261256_0926125943_01_02.jpg"
         }
-    },
-    "icon": {
-        "type": "emoji",
-        "emoji": "🥬"
     },
     "parent": {
         "type": "database_id",
@@ -69,34 +65,98 @@ const notion = new Client({
     },
     "children": [
         {
-            "object": "block",
-            "heading_2": {
-                "rich_text": [
-                    {
-                        "text": {
-                            "content": "安倍元総理大臣の「国葬」に伴う「弔問外交」がまもなく始まります。"
-                        }
-                    }
-                ]
+          "object": "block",
+          "paragraph": {
+              "rich_text": [
+                  {
+                      "text": {
+                          "content": "2022年9月26日 12時20分",
+                      },
+
+                  }
+              ],
+              "color": "gray"
             }
         },
         {
             "object": "block",
-            "paragraph": {
+            "callout": {
                 "rich_text": [
                     {
                         "text": {
-                            "content": "Lacinato kale is a variety of kale with a long tradition in Italian cuisine, especially that of Tuscany. It is also known as Tuscan kale, Italian kale, dinosaur kale, kale, flat back kale, palm tree kale, or black Tuscan palm.",
-                            "link": {
-                                "url": "https://en.wikipedia.org/wiki/Lacinato_kale"
-                            }
+                            "content": "安倍元総理大臣の「国葬」に伴う「弔問外交」がまもなく始まります。\n\n国葬の最新ニュースをこの記事で随時お届けします。",
                         },
-                        "href": "https://en.wikipedia.org/wiki/Lacinato_kale"
-                    }
+                    },
                 ],
-                "color": "default"
+                "icon": {
+                  "emoji": "⭐"
+                },
+                // "children": [
+                  // {
+                  //   "object": "block",
+                  //   "paragraph": {
+                  //       "rich_text": [
+                  //           {
+                  //               "text": {
+                  //                   "content": "安倍元総理大臣の「国葬」に伴う「弔問外交」がまもなく始まります。",
+                  //               },
+
+                  //           }
+                  //       ],
+                  //     }
+                  //   },
+                //     {
+                //       "object": "block",
+                //       "paragraph": {
+                //           "rich_text": [
+                //               {
+                //                   "text": {
+                //                       "content": "国葬の最新ニュースをこの記事で随時お届けします。",
+                //                   },
+
+                //               }
+                //           ],
+                //         }
+                //     },
+                // ],
+                "color": "gray_background",
             }
-        }
+        },
+        {
+          "object": "block",
+          "heading_1": {
+              "rich_text": [
+                  {
+                      "text": {
+                          "content": "安倍元総理大臣の「国葬」に伴う「弔問外交」がまもなく始まります。"
+                      }
+                  }
+              ]
+          }
+        },
+        {
+          "object": "block",
+          "paragraph": {
+              "rich_text": [
+                  {
+                      "text": {
+                          "content": "安倍元総理大臣の「国葬」に伴う「弔問外交」がまもなく始まります。\n\n初日の26日、岸田総理大臣は、アメリカのハリス副大統領らと会談することにしています。\n\n安倍元総理大臣の「国葬」に参列するため、日本を訪れた海外の要人との「弔問外交」は、26日から28日まで東京 港区の迎賓館で行われます。",
+                      },
+                  },
+                  // {
+                  //   "text": {
+                  //       "content": "初日の26日、岸田総理大臣は、アメリカのハリス副大統領らと会談することにしています。",
+                  //   },
+                  // },
+                  // {
+                  //   "text": {
+                  //       "content": "安倍元総理大臣の「国葬」に参列するため、日本を訪れた海外の要人との「弔問外交」は、26日から28日まで東京 港区の迎賓館で行われます。",
+                  //   },
+                  // }
+              ],
+
+          }
+      },
     ]
 });
   console.log(response);
