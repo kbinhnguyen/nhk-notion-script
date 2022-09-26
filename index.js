@@ -16,15 +16,6 @@ async function getHtmlCreateNotionPg(url) {
 
   const baseUrl = 'https://www3.nhk.or.jp';
 
-  // const { data } = await axios({
-  //   method: 'get',
-  //   url: baseUrl + url,
-  //   responseType: 'document',
-  // });
-
-  // const $ = cheerio.load(data);
-  // const bodySections = $('.content--body');
-  // console.log(bodySections.length);
 
   const browser = await chromium.launch();
   const context = await browser.newContext({
@@ -34,9 +25,11 @@ async function getHtmlCreateNotionPg(url) {
   await page.goto(url);
 
 
+
   const time = page.innerText('time');
   const summary = page.innerText('.content--summary');
   const title = page.innerText('.content--title > span');
+
 
 
   const getAttr = async (selector, attribute) => {
@@ -53,12 +46,95 @@ async function getHtmlCreateNotionPg(url) {
   };
 
 
+
   let notionPgEleSubSections = [];
 
   const resolveSubSections = async () => {
     const subsections = await page.$$('.content--body');
+    if (subsections.length === 0) {
+      return;
+    }
     const htmlStrs = await Promise.all(subsections.map((subsection) => (subsection.innerHTML())));
-    return htmlStrs;
+    // return htmlStrs;
+    const subsectionHeadings = [];
+    htmlStrs.forEach((str, index) => {
+      const $ = cheerio.load(str);
+      const subsectionHeading = $('.body-title');
+      const subsectionImg = $('img');
+
+
+      if (subsectionHeading.length === 1) {
+        notionPgEleSubSections.push({
+          object: 'block',
+          heading_1: {
+            rich_text: [
+              {
+                text: {
+                  content: subsectionHeading.html(),
+                }
+              }
+            ]
+          },
+        });
+      } else {
+        if (index === 0) {
+          notionPgEleSubSections.push({
+            object: 'block',
+            paragraph: {
+              rich_text: [
+                {
+                  text: {
+                    content: ' ',
+                  },
+                },
+              ],
+            },
+          });
+        }
+      }
+
+
+      if (subsectionImg.length === 1) {
+        notionPgEleSubSections.push({
+          object: 'block',
+          image: {
+            type: 'external',
+            external: {
+              url: baseUrl + subsectionImg.attr('data-src'),
+            }
+          }
+        },
+        {
+          object: 'block',
+          paragraph: {
+            rich_text: [
+              {
+                text: {
+                  content: ' ',
+                },
+              },
+            ],
+          },
+        });
+      }
+
+
+      notionPgEleSubSections.push({
+        object: 'block',
+        paragraph: {
+          rich_text: [
+            {
+              text: {
+                content: $('.body-text').html().split('<br><br>').join('\n\n'),
+              },
+            },
+          ],
+        },
+      });
+
+    });
+
+    return subsectionHeadings;
   };
 
 
@@ -83,8 +159,8 @@ async function getHtmlCreateNotionPg(url) {
     ]
   );
 
-console.log(subSections[0]);
-/*
+// console.log(subSections[0]);
+
    let notionPageElements = [{
     object: 'block',
     paragraph: {
@@ -165,121 +241,48 @@ console.log(subSections[0]);
     });
   }
 
-*/
-
-  // const bodySections = $('.content--body');
-
-  // if (bodySections.length > 0) {
-  //   bodySections.each((index, element) => {
-  //     const subsectionHeading = $('.body-title', element);
-  //     const subsectionImg = $('img', element);
-
-  //     if (subsectionHeading.length === 1) {
-  //       notionPageElements.push({
-  //         object: 'block',
-  //         heading_1: {
-  //           rich_text: [
-  //             {
-  //               text: {
-  //                 content: $('.body-title', element).text(),
-  //               }
-  //             }
-  //           ]
-  //         },
-  //       });
-  //     } else {
-  //       if (index === 0) {
-  //         notionPageElements.push({
-  //           object: 'block',
-  //           paragraph: {
-  //             rich_text: [
-  //               {
-  //                 text: {
-  //                   content: ' ',
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //         });
-  //       };
-  //     }
 
 
-  //     if (subsectionImg.length > 0) {
-  //       notionPageElements.push({
-  //         object: 'block',
-  //         image: {
-  //           type: 'external',
-  //           external: {
-  //             url: baseUrl + subsectionImg.attr('data-src'),
-  //           }
-  //         }
-  //       },
-  //       {
-  //         object: 'block',
-  //         paragraph: {
-  //           rich_text: [
-  //             {
-  //               text: {
-  //                 content: ' ',
-  //               },
-  //             },
-  //           ],
-  //         },
-  //       });
-  //     }
+  const pageCreationObj = {
+    icon: {
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+    },
+    parent: {
+      type: 'database_id',
+      database_id: '145670bfa33e424c98aad0f7045ddcc9',
+    },
+    properties: {
+      Name: {
+        title: [
+          {
+            text: {
+              content: titleRes,
+              link: { url },
+            }
+          }
+        ]
+      },
+    },
+    children: notionPageElements.concat(notionPgEleSubSections),
+  };
 
 
-  //     notionPageElements.push({
-  //       object: 'block',
-  //       paragraph: {
-  //         rich_text: [
-  //           {
-  //             text: {
-  //               content: $('.body-text', element).html().split('<br><br>').join('\n\n'),
-  //             },
-  //           },
-  //         ],
-  //       },
-  //     });
-  //   });
-  // };
+
+  if (coverImgUrl) {
+    pageCreationObj.cover = {
+      type: 'external',
+      external: {
+        url: baseUrl + coverImgUrl,
+      }
+    };
+  }
 
 
-  // const pageCreationObj = {
-  //   icon: {
-  //     emoji: emojis[Math.floor(Math.random() * emojis.length)],
-  //   },
-  //   parent: {
-  //     type: 'database_id',
-  //     database_id: '145670bfa33e424c98aad0f7045ddcc9',
-  //   },
-  //   properties: {
-  //     Name: {
-  //       title: [
-  //         {
-  //           text: {
-  //             content: titleRes,
-  //             link: { url },
-  //           }
-  //         }
-  //       ]
-  //     },
-  //   },
-  //   children: notionPageElements,
-  // };
 
-  // if (coverImgUrl) {
-  //   pageCreationObj.cover = {
-  //     type: 'external',
-  //     external: {
-  //       url: baseUrl + coverImgUrl,
-  //     }
-  //   };
-  // }
+  const response = await notion.pages.create(pageCreationObj);
+  console.log(response);
 
-  // const response = await notion.pages.create(pageCreationObj);
-  // console.log(response);
+
 
   await context.close();
   await browser.close();
