@@ -212,10 +212,13 @@ export async function resolveSubSections(playwrightPage, baseUrl) {
 // make an object with inputs conforming to required shape specified in Notion API to create a new page
 export function makePageCreationObj(pageParentType, pageTitle, baseEleArr, subsectionsEleArr, url, baseUrl, coverImgUrl) {
   const emojis = ['🗞', '🔖', '🤓', '📃', '📎', '📋', '📁', '🗒', '📥', '🗂', '💼', '📐', '📏', '㊫', '📚', '💻'];
-  const regex = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/;
+  const regexPage = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/;
+  const regexDb = /[A-Za-z0-9]{32}/;
 
-  if (process.env.PARENT_ID.length !== 36 || (pageParentType === 'page' && !regex.test(process.env.PARENT_ID))) {
-    throw new Error('Please provide a valid Notion\'s database or page ID');
+  if (pageParentType === 'page' && !regexPage.test(process.env.PARENT_ID)) {
+    throw new Error('Please provide a valid Notion\'s page ID');
+  } else if (pageParentType === 'db' && !regexDb.test(process.env.PARENT_ID)) {
+    throw new Error('Please provide a valid Notion\'s database ID');
   }
 
   const pageCreationObj = {
