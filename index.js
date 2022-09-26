@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import cheerio from 'cheerio';
 import { chromium } from 'playwright';
 import { Client } from '@notionhq/client';
 import { getAttr, makeBasePageElements, resolveSubSections, makePageCreationObj } from './helpers.js';
@@ -21,48 +20,54 @@ getHtmlCreateNotionPg('news/html/20220925/k10013836141000.html');
 // getHtmlCreateNotionPg('news/html/20220922/k10013829011000.html');
 
 
-async function getHtmlCreateNotionPg(url) {
+async function getHtmlCreateNotionPg(pageParentType, url) {
 
   const baseUrl = 'https://www3.nhk.or.jp';
 
-
-  const browser = await chromium.launch();
-  const context = await browser.newContext({ baseURL: baseUrl });
-  const page = await context.newPage();
-  await page.goto(url);
-
-
-  const [
-    time,
-    summary,
-    title,
-    mainVideoUrl,
-    expandedSummary,
-    coverImgUrl,
-    subsectionsPageElements
-  ] = await Promise.all(
-    [
-      page.innerText('time'),
-      page.innerText('.content--summary'),
-      page.innerText('.content--title > span'),
-      getAttr(page, 'iframe.video-player-fixed', 'src'),
-      getAttr(page, '.content--summary-more', 'text'),
-      getAttr(page, '.content--thumb > img', 'src'),
-      resolveSubSections(page),
-    ]
-  );
+  try {
+    const browser = await chromium.launch();
+    const context = await browser.newContext({ baseURL: baseUrl });
+    const page = await context.newPage();
+    await page.goto(url);
 
 
-  const basePageElements = makeBasePageElements(time, summary, baseUrl, mainVideoUrl, expandedSummary);
-  const pageCreationObj = makePageCreationObj(title, basePageElements, subsectionsPageElements, url, baseUrl, coverImgUrl);
+    const [
+      time,
+      summary,
+      title,
+      mainVideoUrl,
+      expandedSummary,
+      coverImgUrl,
+      subsectionsPageElements
+    ] = await Promise.all(
+      [
+        page.innerText('time'),
+        page.innerText('.content--summary'),
+        page.innerText('.content--title > span'),
+        getAttr(page, 'iframe.video-player-fixed', 'src'),
+        getAttr(page, '.content--summary-more', 'text'),
+        getAttr(page, '.content--thumb > img', 'src'),
+        resolveSubSections(page, baseUrl),
+      ]
+    );
 
 
-  const response = await notion.pages.create(pageCreationObj);
-  console.log(response);
+    const basePageElements = makeBasePageElements(time, summary, baseUrl, mainVideoUrl, expandedSummary);
+    const pageCreationObj = makePageCreationObj(pageParentType, title, basePageElements, subsectionsPageElements, url, baseUrl, coverImgUrl);
 
 
-  await context.close();
-  await browser.close();
+    const response = await notion.pages.create(pageCreationObj);
+    console.log(response);
+  }
+
+  catch (err) {
+    throw err;
+  }
+
+  finally {
+    await context.close();
+    await browser.close();
+  }
 }
 
 
