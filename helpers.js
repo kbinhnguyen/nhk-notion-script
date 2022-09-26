@@ -1,3 +1,19 @@
+// return src attribute for img elements, or innerText of elements with text
+// elements are selected by selectors on page
+export async function getAttr(playwrightPage, selector, attribute) {
+  const ele = await playwrightPage.$(selector);
+  let result = null;
+  if (ele) {
+    if (attribute === 'src') {
+      result = await ele.getAttribute('src');
+    } else if (attribute === 'text') {
+      result = await ele.innerText();
+    }
+  }
+  return result;
+};
+
+
 // create Notion page elements from base nodes of HTML including time, summary, expanded summary, featured video
 export function makeBasePageElements (time, summary, baseUrl, mainVideoUrl, expandedSummary) {
   let basePageElements = [{
@@ -82,6 +98,7 @@ export function makeBasePageElements (time, summary, baseUrl, mainVideoUrl, expa
 
   return basePageElements;
 }
+
 
 
 export function makePageCreationObj(pageTitle, baseEleArr, subsectionsEleArr, url, baseUrl, coverImgUrl) {

@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import cheerio from 'cheerio';
 import { chromium } from 'playwright';
 import { Client } from '@notionhq/client';
-import { makeBasePageElements, makePageCreationObj } from './helpers.js';
+import { getAttr, makeBasePageElements, makePageCreationObj } from './helpers.js';
 
 
 dotenv.config();
@@ -36,20 +36,18 @@ async function getHtmlCreateNotionPg(url) {
 
 
 
-  const getAttr = async (selector, attribute) => {
-    const ele = await page.$(selector);
-    let result = null;
-    if (ele) {
-      if (attribute === 'src') {
-        result = await ele.getAttribute('src');
-      } else if (attribute === 'text') {
-        result = await ele.innerText();
-      }
-    }
-    return result;
-  };
-
-
+  // const getAttr = async (playwrightPage, selector, attribute) => {
+  //   const ele = await playwrightPage.$(selector);
+  //   let result = null;
+  //   if (ele) {
+  //     if (attribute === 'src') {
+  //       result = await ele.getAttribute('src');
+  //     } else if (attribute === 'text') {
+  //       result = await ele.innerText();
+  //     }
+  //   }
+  //   return result;
+  // };
 
 
 
@@ -159,9 +157,9 @@ async function getHtmlCreateNotionPg(url) {
       page.innerText('time'),
       page.innerText('.content--summary'),
       page.innerText('.content--title > span'),
-      getAttr('iframe.video-player-fixed', 'src'),
-      getAttr('.content--summary-more', 'text'),
-      getAttr('.content--thumb > img', 'src'),
+      getAttr(page, 'iframe.video-player-fixed', 'src'),
+      getAttr(page, '.content--summary-more', 'text'),
+      getAttr(page, '.content--thumb > img', 'src'),
       resolveSubSections(),
     ]
   );
@@ -178,7 +176,6 @@ async function getHtmlCreateNotionPg(url) {
   await context.close();
   await browser.close();
 }
-
 
 
 //get page info
