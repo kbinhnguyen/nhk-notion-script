@@ -136,7 +136,6 @@ async function getHtmlCreateNotionPg(url) {
 
     });
 
-    return subsectionHeadings;
   };
 
 
@@ -148,7 +147,7 @@ async function getHtmlCreateNotionPg(url) {
     mainVideoUrl,
     expandedSummary,
     coverImgUrl,
-    subSections
+    _
   ] = await Promise.all(
     [
       time,
