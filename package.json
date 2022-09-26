@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/kbinhnguyen/nhk-notion-server#readme",
   "dependencies": {
+    "@notionhq/client": "^2.2.0",
     "dotenv": "^16.0.2"
   }
 }
