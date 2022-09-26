@@ -4,7 +4,7 @@
   "description": "Server for Notion web clipper with NHK News Web & NHK News Web Easy",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +18,7 @@
   "homepage": "https://github.com/kbinhnguyen/nhk-notion-server#readme",
   "dependencies": {
     "@notionhq/client": "^2.2.0",
-    "axios": "^0.27.2",
-    "cheerio": "^1.0.0-rc.12",
-    "dotenv": "^16.0.2"
+    "dotenv": "^16.0.2",
+    "playwright": "^1.26.0"
   }
 }
