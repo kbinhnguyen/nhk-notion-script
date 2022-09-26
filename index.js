@@ -1,5 +1,4 @@
 require('dotenv').config();
-const axios = require('axios');
 const cheerio = require('cheerio');
 const { chromium } = require('playwright');
 const { Client } = require('@notionhq/client');
