@@ -2,8 +2,7 @@ import dotenv from 'dotenv';
 import cheerio from 'cheerio';
 import { chromium } from 'playwright';
 import { Client } from '@notionhq/client';
-import { getAttr, makeBasePageElements, makePageCreationObj } from './helpers.js';
-
+import { getAttr, makeBasePageElements, resolveSubSections, makePageCreationObj } from './helpers.js';
 
 dotenv.config();
 
@@ -28,120 +27,9 @@ async function getHtmlCreateNotionPg(url) {
 
 
   const browser = await chromium.launch();
-  const context = await browser.newContext({
-    baseURL: baseUrl,
-  });
+  const context = await browser.newContext({ baseURL: baseUrl });
   const page = await context.newPage();
   await page.goto(url);
-
-
-
-  // const getAttr = async (playwrightPage, selector, attribute) => {
-  //   const ele = await playwrightPage.$(selector);
-  //   let result = null;
-  //   if (ele) {
-  //     if (attribute === 'src') {
-  //       result = await ele.getAttribute('src');
-  //     } else if (attribute === 'text') {
-  //       result = await ele.innerText();
-  //     }
-  //   }
-  //   return result;
-  // };
-
-
-
-  const resolveSubSections = async () => {
-    let notionPgEleFromSubSections = [];
-    const subsections = await page.$$('.content--body');
-    if (subsections.length === 0) {
-      return;
-    }
-
-    const htmlStrs = await Promise.all(subsections.map((subsection) => (subsection.innerHTML())));
-
-    htmlStrs.forEach((str, index) => {
-      const $ = cheerio.load(str);
-      const subsectionHeading = $('.body-title');
-      const subsectionImg = $('img');
-      const subsectionBody = $('.body-text');
-
-
-      if (subsectionHeading.length === 1) {
-        notionPgEleFromSubSections.push({
-          object: 'block',
-          heading_1: {
-            rich_text: [
-              {
-                text: {
-                  content: subsectionHeading.html(),
-                }
-              }
-            ]
-          },
-        });
-      } else {
-        if (index === 0) {
-          notionPgEleFromSubSections.push({
-            object: 'block',
-            paragraph: {
-              rich_text: [
-                {
-                  text: {
-                    content: ' ',
-                  },
-                },
-              ],
-            },
-          });
-        }
-      }
-
-
-      if (subsectionImg.length === 1) {
-        notionPgEleFromSubSections.push({
-          object: 'block',
-          image: {
-            type: 'external',
-            external: {
-              url: baseUrl + subsectionImg.attr('src'),
-            }
-          }
-        },
-        {
-          object: 'block',
-          paragraph: {
-            rich_text: [
-              {
-                text: {
-                  content: ' ',
-                },
-              },
-            ],
-          },
-        });
-      }
-
-
-      if (subsectionBody.length > 0) {
-        notionPgEleFromSubSections.push({
-          object: 'block',
-          paragraph: {
-            rich_text: [
-              {
-                text: {
-                  content: subsectionBody.text().split('<br><br>').join('\n\n'),
-                },
-              },
-            ],
-          },
-        });
-      }
-
-    });
-
-    return notionPgEleFromSubSections
-  };
 
 
   const [
@@ -160,7 +48,7 @@ async function getHtmlCreateNotionPg(url) {
       getAttr(page, 'iframe.video-player-fixed', 'src'),
       getAttr(page, '.content--summary-more', 'text'),
       getAttr(page, '.content--thumb > img', 'src'),
-      resolveSubSections(),
+      resolveSubSections(page),
     ]
   );
 
