@@ -11,7 +11,7 @@ const notion = new Client({
 const emojis = ['🗞', '🔖', '🤓', '📃', '📎', '📋', '📁', '🗒', '📥', '🗂', '💼', '📐', '📏', '㊫', '📚', '💻'];
 
 
-async function getHtml(url) {
+async function getHtmlCreateNotionPg(url) {
   const { data } = await axios({
     method: 'get',
     url,
@@ -22,7 +22,7 @@ async function getHtml(url) {
   const baseUrl = 'https://www3.nhk.or.jp';
 
   const $ = cheerio.load(data);
-  // console.log($('iframe'));
+
 
    let notionPageElements = [{
     object: 'block',
@@ -53,6 +53,30 @@ async function getHtml(url) {
       color: 'gray_background',
     },
   }];
+
+
+  const media = $('iframe.video-player-fixed');
+  if (media.length === 1) {
+    notionPageElements.push({
+      object: 'block',
+      paragraph: {
+        rich_text: [
+          {
+            text: {
+              content: ' ',
+            },
+          },
+        ],
+      },
+    },
+    {
+      object: 'block',
+      embed: {
+        url: baseUrl + media.attr('src').split('?')[0],
+      }
+    });
+  }
+
 
   const expandedSummary = $('.content--summary-more');
   if (expandedSummary.length === 1) {
@@ -161,14 +185,7 @@ async function getHtml(url) {
   };
 
 
-
-  const response = await notion.pages.create({
-    cover: {
-      type: 'external',
-      external: {
-        url: baseUrl + $('img', '.content--thumb').attr('data-src'),
-      }
-    },
+  const pageCreationObj = {
     icon: {
       emoji: emojis[Math.floor(Math.random() * emojis.length)],
     },
@@ -189,18 +206,30 @@ async function getHtml(url) {
       },
     },
     children: notionPageElements,
-  });
-  console.log(response);
+  };
 
+  const coverImg = $('img', '.content--thumb');
+  if (coverImg.length === 1) {
+    pageCreationObj.cover = {
+      type: 'external',
+      external: {
+        url: baseUrl + coverImg.attr('data-src'),
+      }
+    };
+  }
+
+  const response = await notion.pages.create(pageCreationObj);
+  console.log(response);
 }
 
 
-// getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837341000.html');
-// getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837351000.html');
-// getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
-// getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837561000.html');
-// getHtml('https://www3.nhk.or.jp/news/html/20220925/k10013836141000.html');
-getHtml('https://www3.nhk.or.jp/news/html/20220925/k10013836791000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837341000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837351000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837561000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220925/k10013836141000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220925/k10013836791000.html');
+getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013836981000.html');
 
 //get page info
 // (async () => {
