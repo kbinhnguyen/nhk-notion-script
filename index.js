@@ -1,5 +1,5 @@
 require('dotenv').config();
-const playwright = require('playwright');
+const { chromium } = require('playwright');
 const { Client } = require('@notionhq/client');
 
 
@@ -11,18 +11,10 @@ const emojis = ['🗞', '🔖', '🤓', '📃', '📎', '📋', '📁', '🗒', 
 
 
 async function getHtmlCreateNotionPg(url) {
-  // const { data } = await axios({
-  //   method: 'get',
-  //   url,
-  //   responseType: 'document',
-  // });
 
   const baseUrl = 'https://www3.nhk.or.jp';
 
-  const browser = await playwright.chromium.launch({
-    headless: true,
-  });
-
+  const browser = await chromium.launch();
   const context = await browser.newContext({
     baseURL: baseUrl,
   });
@@ -32,34 +24,8 @@ async function getHtmlCreateNotionPg(url) {
 
   const time = page.innerText('time');
   const summary = page.innerText('.content--summary');
-  // const expandedSummary = page.innerText('.content--summary-more');
+  const title = page.innerText('.content--title > span');
 
-  const getMainVideo = async () => {
-    const ele = await page.$('iframe.video-player-fixed');
-    if (ele) {
-      const mainVideoUrl = await ele.getAttribute('src');
-      return mainVideoUrl;
-    }
-    return null;
-  };
-
-  const getExpandedSummary = async () => {
-    const ele = await page.$('.content--summary-more');
-    if (ele) {
-      const expandedSummary = await ele.innerText();
-      return expandedSummary;
-    }
-    return null;
-  };
-
-  const getCoverImg = async () => {
-    const ele = await page.$('.content--thumb > img');
-    if (ele) {
-      const result = await ele.getAttribute('src');
-      return result;
-    }
-    return null;
-  };
 
   const getAttr = async (selector, attribute) => {
     const ele = await page.$(selector);
@@ -75,22 +41,47 @@ async function getHtmlCreateNotionPg(url) {
   };
 
 
+  let notionPgEleSubSections = [];
+
+  const resolveSubSections = async () => {
+    // const subsections = await page.$$('.content--body');
+    const subsections = page.locator('.body-text');
+    return subsections.allInnerTexts;
+    // console.log(subsections.length);
+    // if (subsections.length === 0) {
+    //   return;
+    // }
+
+
+    // console.log(subsections.length);
+    // const htmlStrPromises = subsections.map((subsection) => (subsection.innerHTML));
+    // const htmlStrs = await Promise.all(htmlStrPromises);
+    // const htmlStrs = await subsections.evaluateAll(subsection => subsection.innerHTML);
+    // return htmlStrs;
+  };
+
+
+
   const [
     timeRes,
     summaryRes,
-    mainVideoRes,
-    expandedSummaryRes,
-    coverImg
+    titleRes,
+    mainVideoUrl,
+    expandedSummary,
+    coverImgUrl,
+    subSections
   ] = await Promise.all(
     [
       time,
       summary,
+      title,
       getAttr('iframe.video-player-fixed', 'src'),
       getAttr('.content--summary-more', 'text'),
       getAttr('.content--thumb > img', 'src'),
+      resolveSubSections(),
     ]
   );
-  console.log(coverImg);
+
 
 /*
    let notionPageElements = [{
@@ -124,7 +115,7 @@ async function getHtmlCreateNotionPg(url) {
   }];
 
 
-  if (mainVideoRes) {
+  if (mainVideoUrl) {
     notionPageElements.push({
       object: 'block',
       paragraph: {
@@ -140,13 +131,13 @@ async function getHtmlCreateNotionPg(url) {
     {
       object: 'block',
       embed: {
-        url: baseUrl + mainVideoRes.split('?')[0],
+        url: baseUrl + mainVideoUrl.split('?')[0],
       }
     });
   }
 
 
-  if (expandedSummaryRes) {
+  if (expandedSummary) {
     notionPageElements.push({
       object: 'block',
       paragraph: {
@@ -165,15 +156,15 @@ async function getHtmlCreateNotionPg(url) {
         rich_text: [
           {
             text: {
-              content: expandedSummaryRes,
+              content: expandedSummary,
             },
           },
         ],
       },
     });
   }
-*/
 
+*/
 
   // const bodySections = $('.content--body');
 
@@ -267,7 +258,7 @@ async function getHtmlCreateNotionPg(url) {
   //       title: [
   //         {
   //           text: {
-  //             content: $('span', '.content--title').text(),
+  //             content: titleRes,
   //             link: { url },
   //           }
   //         }
@@ -277,12 +268,11 @@ async function getHtmlCreateNotionPg(url) {
   //   children: notionPageElements,
   // };
 
-  // const coverImg = $('img', '.content--thumb');
-  // if (coverImg.length === 1) {
+  // if (coverImgUrl) {
   //   pageCreationObj.cover = {
   //     type: 'external',
   //     external: {
-  //       url: baseUrl + coverImg.attr('data-src'),
+  //       url: baseUrl + coverImgUrl,
   //     }
   //   };
   // }
@@ -295,18 +285,15 @@ async function getHtmlCreateNotionPg(url) {
 }
 
 
-// getHtmlCreateNotionPg('/news/html/20220926/k10013837341000.html');
+getHtmlCreateNotionPg('/news/html/20220926/k10013837341000.html');
 // getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837351000.html');
 // getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
 // getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837561000.html');
 // getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220925/k10013836141000.html');
 // getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220925/k10013836791000.html');
 // getHtmlCreateNotionPg('news/html/20220926/k10013836981000.html');
-getHtmlCreateNotionPg('news/html/20220922/k10013829011000.html');
-/* cheerio could not correctly parse this site despite it exhibiting the right classNames for selectors
-because HTML was later 'hydrated' after initial load with Javascript
-will prob have to try playwright
-*/
+// getHtmlCreateNotionPg('news/html/20220922/k10013829011000.html');
+
 
 
 //get page info
