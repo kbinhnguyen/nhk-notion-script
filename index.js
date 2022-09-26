@@ -51,9 +51,10 @@ async function getHtmlCreateNotionPg(url) {
 
 
 
-  let notionPgEleFromSubSections = [];
+
 
   const resolveSubSections = async () => {
+    let notionPgEleFromSubSections = [];
     const subsections = await page.$$('.content--body');
     if (subsections.length === 0) {
       return;
@@ -141,6 +142,7 @@ async function getHtmlCreateNotionPg(url) {
 
     });
 
+    return notionPgEleFromSubSections
   };
 
 
@@ -151,7 +153,7 @@ async function getHtmlCreateNotionPg(url) {
     mainVideoUrl,
     expandedSummary,
     coverImgUrl,
-    _
+    subsectionsPageElements
   ] = await Promise.all(
     [
       page.innerText('time'),
@@ -165,87 +167,8 @@ async function getHtmlCreateNotionPg(url) {
   );
 
 
-  //  let notionPageElements = [{
-  //   object: 'block',
-  //   paragraph: {
-  //     rich_text: [
-  //       {
-  //         text: {
-  //           content: time,
-  //         },
-  //       }
-  //     ],
-  //     color: 'gray',
-  //   },
-  // },
-  // {
-  //   object: 'block',
-  //   callout: {
-  //     rich_text: [
-  //       {
-  //         text: {
-  //           content: summary,
-  //         },
-  //       },
-  //     ],
-  //     icon: {
-  //       emoji: '⭐'
-  //     },
-  //     color: 'gray_background',
-  //   },
-  // }];
-
-
-  // if (mainVideoUrl) {
-  //   notionPageElements.push({
-  //     object: 'block',
-  //     paragraph: {
-  //       rich_text: [
-  //         {
-  //           text: {
-  //             content: ' ',
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   },
-  //   {
-  //     object: 'block',
-  //     embed: {
-  //       url: baseUrl + mainVideoUrl.split('?')[0],
-  //     }
-  //   });
-  // }
-
-
-  // if (expandedSummary) {
-  //   notionPageElements.push({
-  //     object: 'block',
-  //     paragraph: {
-  //       rich_text: [
-  //         {
-  //           text: {
-  //             content: ' ',
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   },
-  //   {
-  //     object: 'block',
-  //     paragraph: {
-  //       rich_text: [
-  //         {
-  //           text: {
-  //             content: expandedSummary,
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   });
-  // }
   const basePageElements = makeBasePageElements(time, summary, baseUrl, mainVideoUrl, expandedSummary);
-  const pageCreationObj = makePageCreationObj(title, basePageElements, notionPgEleFromSubSections, url, baseUrl, coverImgUrl);
+  const pageCreationObj = makePageCreationObj(title, basePageElements, subsectionsPageElements, url, baseUrl, coverImgUrl);
 
 
   const response = await notion.pages.create(pageCreationObj);
