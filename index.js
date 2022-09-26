@@ -8,6 +8,8 @@ const notion = new Client({
   auth: process.env.NOTION_TOKEN,
 });
 
+const emojis = ['🗞', '🔖', '🤓', '📃', '📎', '📋', '📁', '🗒', '📥', '🗂', '💼', '📐', '📏', '㊫', '📚', '💻'];
+
 
 async function getHtml(url) {
   const { data } = await axios({
@@ -16,6 +18,8 @@ async function getHtml(url) {
     responseType: 'document',
   });
 
+
+  const baseUrl = 'https://www3.nhk.or.jp';
 
   const $ = cheerio.load(data);
   // console.log($('iframe'));
@@ -44,7 +48,7 @@ async function getHtml(url) {
         },
       ],
       icon: {
-      emoji: '⭐'
+        emoji: '⭐'
       },
       color: 'gray_background',
     },
@@ -82,19 +86,66 @@ async function getHtml(url) {
 
   if (bodySections.length > 0) {
     bodySections.each((index, element) => {
-      notionPageElements.push({
-        object: 'block',
-        heading_1: {
-          rich_text: [
-            {
-              text: {
-                content: $('.body-title', element).text(),
+      const subsectionHeading = $('.body-title', element);
+      const subsectionImg = $('img', element);
+
+      if (subsectionHeading.length === 1) {
+        notionPageElements.push({
+          object: 'block',
+          heading_1: {
+            rich_text: [
+              {
+                text: {
+                  content: $('.body-title', element).text(),
+                }
               }
+            ]
+          },
+        });
+      } else {
+        if (index === 0) {
+          notionPageElements.push({
+            object: 'block',
+            paragraph: {
+              rich_text: [
+                {
+                  text: {
+                    content: ' ',
+                  },
+                },
+              ],
+            },
+          });
+        };
+      }
+
+
+      if (subsectionImg.length > 0) {
+        notionPageElements.push({
+          object: 'block',
+          image: {
+            type: 'external',
+            external: {
+              url: baseUrl + subsectionImg.attr('data-src'),
             }
-          ]
+          }
         },
-      },
-      {
+        {
+          object: 'block',
+          paragraph: {
+            rich_text: [
+              {
+                text: {
+                  content: ' ',
+                },
+              },
+            ],
+          },
+        });
+      }
+
+
+      notionPageElements.push({
         object: 'block',
         paragraph: {
           rich_text: [
@@ -107,15 +158,19 @@ async function getHtml(url) {
         },
       });
     });
-  }
+  };
+
 
 
   const response = await notion.pages.create({
     cover: {
       type: 'external',
       external: {
-        url: `https://www3.nhk.or.jp${$('img', '.content--thumb').attr('data-src')}`,
+        url: baseUrl + $('img', '.content--thumb').attr('data-src'),
       }
+    },
+    icon: {
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
     },
     parent: {
       type: 'database_id',
@@ -137,12 +192,15 @@ async function getHtml(url) {
   });
   console.log(response);
 
-};
+}
 
 
 // getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837341000.html');
-getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837351000.html');
-
+// getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837351000.html');
+// getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
+// getHtml('https://www3.nhk.or.jp/news/html/20220926/k10013837561000.html');
+// getHtml('https://www3.nhk.or.jp/news/html/20220925/k10013836141000.html');
+getHtml('https://www3.nhk.or.jp/news/html/20220925/k10013836791000.html');
 
 //get page info
 // (async () => {
