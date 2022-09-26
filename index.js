@@ -10,6 +10,56 @@ const notion = new Client({
 
 const emojis = ['🗞', '🔖', '🤓', '📃', '📎', '📋', '📁', '🗒', '📥', '🗂', '💼', '📐', '📏', '㊫', '📚', '💻'];
 
+// getHtmlCreateNotionPg('/news/html/20220926/k10013837341000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837351000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837561000.html');
+// getHtmlCreateNotionPg('news/html/20220925/k10013836141000.html');
+// getHtmlCreateNotionPg('news/html/20220925/k10013836791000.html');
+// getHtmlCreateNotionPg('news/html/20220926/k10013836981000.html');
+getHtmlCreateNotionPg('news/html/20220922/k10013829011000.html');
+
+
+function makePageCreationObj(pageTitle, baseEleArr, subsectionsEleArr, url, baseUrl, coverImgUrl) {
+  const pageCreationObj = {
+    icon: {
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+    },
+    parent: {
+      type: 'database_id',
+      database_id: '145670bfa33e424c98aad0f7045ddcc9',
+    },
+    properties: {
+      Name: {
+        title: [
+          {
+            text: {
+              content: pageTitle,
+              // content: title,
+              link: { url: baseUrl + url },
+            }
+          }
+        ]
+      },
+    },
+    children: baseEleArr.concat(subsectionsEleArr),
+    // children: notionPageElements.concat(notionPgEleSubSections),
+  };
+
+
+
+  if (coverImgUrl) {
+    pageCreationObj.cover = {
+      type: 'external',
+      external: {
+        url: baseUrl + coverImgUrl,
+      }
+    };
+  }
+
+  return pageCreationObj;
+}
+
 
 async function getHtmlCreateNotionPg(url) {
 
@@ -22,12 +72,6 @@ async function getHtmlCreateNotionPg(url) {
   });
   const page = await context.newPage();
   await page.goto(url);
-
-
-
-  const time = page.innerText('time');
-  const summary = page.innerText('.content--summary');
-  const title = page.innerText('.content--title > span');
 
 
 
@@ -141,18 +185,18 @@ async function getHtmlCreateNotionPg(url) {
 
 
   const [
-    timeRes,
-    summaryRes,
-    titleRes,
+    time,
+    summary,
+    title,
     mainVideoUrl,
     expandedSummary,
     coverImgUrl,
     _
   ] = await Promise.all(
     [
-      time,
-      summary,
-      title,
+      page.innerText('time'),
+      page.innerText('.content--summary'),
+      page.innerText('.content--title > span'),
       getAttr('iframe.video-player-fixed', 'src'),
       getAttr('.content--summary-more', 'text'),
       getAttr('.content--thumb > img', 'src'),
@@ -167,7 +211,7 @@ async function getHtmlCreateNotionPg(url) {
       rich_text: [
         {
           text: {
-            content: timeRes,
+            content: time,
           },
         }
       ],
@@ -180,7 +224,7 @@ async function getHtmlCreateNotionPg(url) {
       rich_text: [
         {
           text: {
-            content: summaryRes,
+            content: summary,
           },
         },
       ],
@@ -243,39 +287,43 @@ async function getHtmlCreateNotionPg(url) {
 
 
 
-  const pageCreationObj = {
-    icon: {
-      emoji: emojis[Math.floor(Math.random() * emojis.length)],
-    },
-    parent: {
-      type: 'database_id',
-      database_id: '145670bfa33e424c98aad0f7045ddcc9',
-    },
-    properties: {
-      Name: {
-        title: [
-          {
-            text: {
-              content: titleRes,
-              link: { url: baseUrl + url },
-            }
-          }
-        ]
-      },
-    },
-    children: notionPageElements.concat(notionPgEleSubSections),
-  };
+  // const pageCreationObj = {
+  //   icon: {
+  //     emoji: emojis[Math.floor(Math.random() * emojis.length)],
+  //   },
+  //   parent: {
+  //     type: 'database_id',
+  //     database_id: '145670bfa33e424c98aad0f7045ddcc9',
+  //   },
+  //   properties: {
+  //     Name: {
+  //       title: [
+  //         {
+  //           text: {
+  //             content: title,
+  //             link: { url: baseUrl + url },
+  //           }
+  //         }
+  //       ]
+  //     },
+  //   },
+  //   children: notionPageElements.concat(notionPgEleSubSections),
+  // };
 
 
 
-  if (coverImgUrl) {
-    pageCreationObj.cover = {
-      type: 'external',
-      external: {
-        url: baseUrl + coverImgUrl,
-      }
-    };
-  }
+  // if (coverImgUrl) {
+  //   pageCreationObj.cover = {
+  //     type: 'external',
+  //     external: {
+  //       url: baseUrl + coverImgUrl,
+  //     }
+  //   };
+  // }
+
+
+  // makePageCreationObj(pageTitle, baseEleArr, subsectionsEleArr, url, baseUrl, coverImgUrl)
+  const pageCreationObj = makePageCreationObj(title, notionPageElements, notionPgEleSubSections, url, baseUrl, coverImgUrl);
 
 
 
@@ -287,16 +335,6 @@ async function getHtmlCreateNotionPg(url) {
   await context.close();
   await browser.close();
 }
-
-
-// getHtmlCreateNotionPg('/news/html/20220926/k10013837341000.html');
-// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837351000.html');
-// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
-// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837561000.html');
-// getHtmlCreateNotionPg('news/html/20220925/k10013836141000.html');
-// getHtmlCreateNotionPg('news/html/20220925/k10013836791000.html');
-// getHtmlCreateNotionPg('news/html/20220926/k10013836981000.html');
-getHtmlCreateNotionPg('news/html/20220922/k10013829011000.html');
 
 
 
