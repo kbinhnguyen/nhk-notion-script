@@ -229,7 +229,13 @@ async function getHtmlCreateNotionPg(url) {
 // getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013837561000.html');
 // getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220925/k10013836141000.html');
 // getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220925/k10013836791000.html');
-getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013836981000.html');
+// getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220926/k10013836981000.html');
+getHtmlCreateNotionPg('https://www3.nhk.or.jp/news/html/20220922/k10013829011000.html');
+/* cheerio could not correctly parse this site despite it exhibiting the right classNames for selectors
+because HTML was later 'hydrated' after initial load with Javascript
+will prob have to try playwright
+*/
+
 
 //get page info
 // (async () => {
