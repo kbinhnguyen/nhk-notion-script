@@ -53,9 +53,9 @@ async function getHtmlCreateNotionPg(url) {
     if (subsections.length === 0) {
       return;
     }
+
     const htmlStrs = await Promise.all(subsections.map((subsection) => (subsection.innerHTML())));
-    // return htmlStrs;
-    const subsectionHeadings = [];
+
     htmlStrs.forEach((str, index) => {
       const $ = cheerio.load(str);
       const subsectionHeading = $('.body-title');
