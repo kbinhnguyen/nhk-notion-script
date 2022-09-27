@@ -110,6 +110,7 @@ export function makeBasePageElements (time, summary, baseUrl, mainVideoUrl, expa
 }
 
 
+// maping HTML nodes in the main body to Notion page elements to be added
 export async function resolveSubSections(playwrightPage, baseUrl) {
 
   try {
