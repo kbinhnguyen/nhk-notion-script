@@ -119,7 +119,7 @@ export async function resolveSubSections(playwrightPage, baseUrl) {
       return [];
     }
 
-    const htmlStrs = await Promise.all(subsections.map((subsection) => (subsection.innerHTML().trim())));
+    const htmlStrs = await Promise.all(subsections.map((subsection) => (subsection.innerHTML())));
 
     htmlStrs.forEach((str, index) => {
       const $ = cheerio.load(str);
