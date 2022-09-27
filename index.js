@@ -11,9 +11,9 @@ const notion = new Client({
 
 
 // getHtmlCreateNotionPg('db', '/news/html/20220926/k10013837341000.html');
-// getHtmlCreateNotionPg('db', 'https://www3.nhk.or.jp/news/html/20220926/k10013837351000.html');
-// getHtmlCreateNotionPg('db', 'https://www3.nhk.or.jp/news/html/20220926/k10013837181000.html');
-// getHtmlCreateNotionPg('db', 'https://www3.nhk.or.jp/news/html/20220926/k10013837561000.html');
+// getHtmlCreateNotionPg('db', '/news/html/20220926/k10013837351000.html');
+// getHtmlCreateNotionPg('db', '/news/html/20220926/k10013837181000.html');
+// getHtmlCreateNotionPg('db', '/news/html/20220926/k10013837561000.html');
 getHtmlCreateNotionPg('db', 'news/html/20220925/k10013836141000.html');
 // getHtmlCreateNotionPg('db', 'news/html/20220925/k10013836791000.html');
 // getHtmlCreateNotionPg('db', 'news/html/20220926/k10013836981000.html');

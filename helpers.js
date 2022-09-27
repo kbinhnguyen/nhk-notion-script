@@ -119,7 +119,7 @@ export async function resolveSubSections(playwrightPage, baseUrl) {
       return [];
     }
 
-    const htmlStrs = await Promise.all(subsections.map((subsection) => (subsection.innerHTML())));
+    const htmlStrs = await Promise.all(subsections.map((subsection) => (subsection.innerHTML().trim())));
 
     htmlStrs.forEach((str, index) => {
       const $ = cheerio.load(str);
@@ -135,7 +135,7 @@ export async function resolveSubSections(playwrightPage, baseUrl) {
             rich_text: [
               {
                 text: {
-                  content: subsectionHeading.html(),
+                  content: subsectionHeading.html().trim(),
                 }
               }
             ]
@@ -191,7 +191,7 @@ export async function resolveSubSections(playwrightPage, baseUrl) {
             rich_text: [
               {
                 text: {
-                  content: subsectionBody.html().split('<br><br>').join('\n\n'),
+                  content: subsectionBody.html().trim().split('<br><br>').join('\n\n'),
                 },
               },
             ],
