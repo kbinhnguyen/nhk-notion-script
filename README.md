@@ -1,1 +1,1 @@
-# nhk-notion-server
+# nhk-notion-script
