@@ -1,6 +1,6 @@
 # nhk-notion-script
 ## What is this?
-A simple script to be run in a NodeJS environment. As both a Notion user and a Japanese-language learner, I am worn out by all the manual labor involved in copy-pasting and doing text-formating involved when transferring news articles from the NHK News website to my personal Notion account. So this is an MVP attempt built in only a day to automate that process to some extent.
+A simple script to be run in a NodeJS environment. As both a Notion user and a Japanese-language learner, I am worn out by all the manual labor involved in copy-pasting and text-formating involved when transferring news articles from the NHK News website to my personal Notion account. So this is an MVP attempt built in only a day to automate that process to some extent.
 
 ## Technologies & APIs used
 - [Playwright Library](https://playwright.dev/docs/library)
