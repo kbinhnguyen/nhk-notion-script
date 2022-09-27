@@ -16,13 +16,14 @@ A simple script to be run in a NodeJS environment. As both a Notion user and a J
 4. Calling the main function in `index.js` with 2 parameters: `"db"` (for database) or `"page"`, and the URL of the article starting with `/news/html/`.
 5. `npm start` or `node index.js`.
 
-## Why a headless browser for webscraping?
+## Chit & chat with me
+### Why a headless browser for webscraping?
 I originally attempted a more minimalistic approach using a traditional HTTP client and only Cheerio. But the majority of the content in some articles were hydrated client-side.
 
-## Why not a third-party readability library?
+### Why not a third-party readability library?
 I just didn't think of it at the time 😅. Perhaps I will try that next.
 
-## Screenshots
+## Screenshots from Notion
 ![Preview1](https://i.imgur.com/y1K5um4.png)
 
 ![Preview2](https://i.imgur.com/ZKGaSKz.png)
