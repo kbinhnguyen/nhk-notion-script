@@ -1,7 +1,7 @@
 {
   "name": "nhk-notion-script",
   "version": "1.0.0",
-  "description": "Server for Notion web clipper with NHK News Web & NHK News Web Easy",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
