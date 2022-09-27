@@ -17,7 +17,17 @@ getHtmlCreateNotionPg('db', '/news/html/20220925/k10013836141000.html');
 
 async function getHtmlCreateNotionPg(pageParentType, url) {
 
+  const regexPage = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/;
+  const regexDb = /[A-Za-z0-9]{32}/;
+
+  if (pageParentType === 'page' && !regexPage.test(process.env.PARENT_ID)) {
+    throw new Error('Please provide a valid Notion\'s page ID');
+  } else if (pageParentType === 'db' && !regexDb.test(process.env.PARENT_ID)) {
+    throw new Error('Please provide a valid Notion\'s database ID');
+  }
+
   const baseUrl = 'https://www3.nhk.or.jp';
+
 
   const browser = await chromium.launch();
   const context = await browser.newContext({ baseURL: baseUrl });
